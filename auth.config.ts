@@ -25,7 +25,12 @@ export const authConfig: NextAuthConfig = {
     }),
   ],
   callbacks: {
-    authorized({ auth }) {
+    authorized({ auth, request }) {
+      const { pathname } = request.nextUrl;
+      // Allow public routes through without auth
+      if (pathname === "/login" || pathname === "/register" || pathname.startsWith("/api/")) {
+        return true;
+      }
       return !!auth?.user;
     },
     async jwt({ token, user }) {
