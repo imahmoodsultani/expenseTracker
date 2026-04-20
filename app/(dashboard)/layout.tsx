@@ -24,6 +24,7 @@ export default async function DashboardLayout({
             <NavLink href="/reports">Reports</NavLink>
           </nav>
           <div className="flex items-center gap-3">
+            <NavLink href="/profile">Profile</NavLink>
             <span className="text-sm text-gray-500">{session.user.email}</span>
             <SignOutButton />
           </div>
