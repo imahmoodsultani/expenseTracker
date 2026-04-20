@@ -41,9 +41,3 @@ test-results/
 
 # Vercel
 .vercel
-
-
-# SDD
-.claude/
-.specify/
-openspec/
