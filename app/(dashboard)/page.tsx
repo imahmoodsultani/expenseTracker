@@ -89,10 +89,10 @@ export default function GeneralDashboard() {
   const totalAmount = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">General Expenses</h1>
+          <h1 className="text-xl font-bold text-gray-900 sm:text-2xl">General Expenses</h1>
           {!loading && (
             <p className="mt-1 text-sm text-gray-500">
               {expenses.length} expense{expenses.length !== 1 ? "s" : ""} · Total: {formatCurrency(totalAmount)}

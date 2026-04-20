@@ -90,7 +90,7 @@ export default function ProfileForm({ user }: { user: User }) {
   return (
     <div className="space-y-8">
       {/* General Info */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
         <h2 className="mb-4 text-base font-semibold text-gray-900">General Information</h2>
         <form onSubmit={infoForm.handleSubmit(onInfoSubmit)} className="space-y-4">
           <Field label="Name" error={infoForm.formState.errors.name?.message}>
@@ -143,7 +143,7 @@ export default function ProfileForm({ user }: { user: User }) {
       </div>
 
       {/* Change Password */}
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
         <h2 className="mb-4 text-base font-semibold text-gray-900">Change Password</h2>
         <form onSubmit={pwForm.handleSubmit(onPasswordSubmit)} className="space-y-4">
           <Field label="Current Password" error={pwForm.formState.errors.currentPassword?.message}>

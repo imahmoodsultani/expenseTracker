@@ -103,7 +103,7 @@ export default function ExpenseForm({ projectId, expense, onSuccess, onCancel }:
         {errors.title && <p className="mt-1 text-xs text-red-600">{errors.title.message}</p>}
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700">
             Amount <span className="text-red-500">*</span>
@@ -191,14 +191,14 @@ export default function ExpenseForm({ projectId, expense, onSuccess, onCancel }:
         <button
           type="button"
           onClick={onCancel}
-          className="rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+          className="rounded-md border border-gray-300 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={isSubmitting}
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700 disabled:opacity-50"
+          className="rounded-md bg-blue-600 px-4 py-2.5 text-sm text-white hover:bg-blue-700 disabled:opacity-50"
         >
           {isSubmitting ? "Saving..." : isEdit ? "Update Expense" : "Add Expense"}
         </button>

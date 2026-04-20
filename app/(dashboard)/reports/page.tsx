@@ -66,9 +66,9 @@ export default function SummaryReportPage() {
   if (filters.endDate) csvParams.set("endDate", filters.endDate);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Overall Summary</h1>
+        <h1 className="text-xl font-bold text-gray-900 sm:text-2xl">Overall Summary</h1>
         <p className="mt-1 text-sm text-gray-500">Total across all sources: {formatCurrency(grandTotal)}</p>
       </div>
 
@@ -90,7 +90,7 @@ export default function SummaryReportPage() {
           </div>
 
           {!breakdown && flatTotals.length > 0 && (
-            <div className="rounded-lg border border-gray-200 bg-white">
+            <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
               <table className="w-full text-sm">
                 <thead className="border-b border-gray-200 bg-gray-50">
                   <tr>
@@ -103,8 +103,8 @@ export default function SummaryReportPage() {
                   {flatTotals.map((row) => (
                     <tr key={row.categoryName}>
                       <td className="px-4 py-3 text-gray-900">{row.categoryName}</td>
-                      <td className="px-4 py-3 text-right text-gray-600">{row.count}</td>
-                      <td className="px-4 py-3 text-right font-medium text-gray-900">{formatCurrency(row.total)}</td>
+                      <td className="whitespace-nowrap px-4 py-3 text-right text-gray-600">{row.count}</td>
+                      <td className="whitespace-nowrap px-4 py-3 text-right font-medium text-gray-900">{formatCurrency(row.total)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -119,7 +119,7 @@ export default function SummaryReportPage() {
           )}
 
           {breakdown && breakdownTotals.length > 0 && (
-            <div className="rounded-lg border border-gray-200 bg-white">
+            <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
               <table className="w-full text-sm">
                 <thead className="border-b border-gray-200 bg-gray-50">
                   <tr>

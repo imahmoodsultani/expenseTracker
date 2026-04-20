@@ -60,14 +60,14 @@ export default function ProjectReportPage() {
   const chartData = totals.map((t) => ({ categoryName: t.categoryName, total: Number(t.total) }));
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div>
         <div className="flex items-center gap-2 text-sm text-gray-500">
           <Link href="/reports" className="hover:text-blue-600">Reports</Link>
           <span>/</span>
           <span>{projectName || "..."}</span>
         </div>
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-xl font-bold text-gray-900 sm:text-2xl">
           {projectName ? `${projectName} — Report` : "Project Report"}
         </h1>
         <p className="mt-1 text-sm text-gray-500">Total: {formatCurrency(grandTotal)}</p>
@@ -88,7 +88,7 @@ export default function ProjectReportPage() {
           </div>
 
           {totals.length > 0 && (
-            <div className="rounded-lg border border-gray-200 bg-white">
+            <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
               <table className="w-full text-sm">
                 <thead className="border-b border-gray-200 bg-gray-50">
                   <tr>
@@ -101,8 +101,8 @@ export default function ProjectReportPage() {
                   {totals.map((row) => (
                     <tr key={row.categoryId}>
                       <td className="px-4 py-3 text-gray-900">{row.categoryName}</td>
-                      <td className="px-4 py-3 text-right text-gray-600">{row.count}</td>
-                      <td className="px-4 py-3 text-right font-medium text-gray-900">{formatCurrency(row.total)}</td>
+                      <td className="whitespace-nowrap px-4 py-3 text-right text-gray-600">{row.count}</td>
+                      <td className="whitespace-nowrap px-4 py-3 text-right font-medium text-gray-900">{formatCurrency(row.total)}</td>
                     </tr>
                   ))}
                 </tbody>
