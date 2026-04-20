@@ -1,5 +1,7 @@
 # Expense Tracker
 
+**Live demo**: [expense-tracker-nu-five-32.vercel.app](https://expense-tracker-nu-five-32.vercel.app/)
+
 A full-featured expense tracking application built with Next.js 15 and Turso (SQLite). Track personal and project-based expenses, set up recurring charges, generate reports, and export data as CSV. Includes a companion React Native mobile app built with Expo.
 
 ## Features
