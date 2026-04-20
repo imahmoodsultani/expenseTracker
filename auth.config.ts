@@ -26,7 +26,7 @@ export const authConfig: NextAuthConfig = {
   ],
   callbacks: {
     authorized({ auth, request }) {
-      const { pathname } = request.nextUrl;
+      const pathname = new URL(request.url).pathname;
       // Allow public routes through without auth
       if (pathname === "/login" || pathname === "/register" || pathname.startsWith("/api/")) {
         return true;
