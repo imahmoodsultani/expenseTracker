@@ -59,10 +59,11 @@ export async function GET(request: Request) {
 
   const grouped = await db.expense.groupBy({
     by: ["categoryId"],
-    where,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    where: where as any,
     _sum: { amount: true },
     _count: { id: true },
-  }) as GroupedRow[];
+  }) as unknown as GroupedRow[];
 
   const categoryIds = grouped.map((g) => g.categoryId);
   const categories = await db.category.findMany({

@@ -72,9 +72,10 @@ export async function GET(request: Request) {
   if (breakdown) {
     const grouped = await db.expense.groupBy({
       by: ["categoryId", "projectId"],
-      where,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      where: where as any,
       _sum: { amount: true },
-    }) as GroupedRow[];
+    }) as unknown as GroupedRow[];
 
     const categoryIds = Array.from(new Set(grouped.map((g) => g.categoryId)));
     const projectIds = Array.from(
@@ -120,10 +121,11 @@ export async function GET(request: Request) {
   // Flat view
   const grouped = await db.expense.groupBy({
     by: ["categoryId"],
-    where,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    where: where as any,
     _sum: { amount: true },
     _count: { id: true },
-  }) as FlatGroupedRow[];
+  }) as unknown as FlatGroupedRow[];
 
   const categoryIds = grouped.map((g) => g.categoryId);
   const categories = await db.category.findMany({
