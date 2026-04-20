@@ -1,6 +1,6 @@
 # Expense Tracker
 
-A full-featured expense tracking web application built with Next.js 15 and MySQL. Track personal and project-based expenses, set up recurring charges, generate reports, and export data as CSV.
+A full-featured expense tracking application built with Next.js 15 and Turso (SQLite). Track personal and project-based expenses, set up recurring charges, generate reports, and export data as CSV. Includes a companion React Native mobile app built with Expo.
 
 ## Features
 
@@ -12,8 +12,11 @@ A full-featured expense tracking web application built with Next.js 15 and MySQL
 - **Reports & Analytics** — Expense summaries by category with Recharts visualizations and drill-down views
 - **CSV Export** — Download any report as a CSV file
 - **Search & Filter** — Filter expenses by category, date range, or keyword (title/description)
+- **Mobile App** — Companion Expo/React Native app for iOS and Android
 
 ## Tech Stack
+
+### Web (Next.js)
 
 | Layer | Technology |
 |---|---|
@@ -21,11 +24,21 @@ A full-featured expense tracking web application built with Next.js 15 and MySQL
 | UI | React 19, Tailwind CSS 3, Recharts 2 |
 | Language | TypeScript 5 |
 | Auth | Auth.js (next-auth) v5 beta, @auth/prisma-adapter |
-| ORM | Prisma 5 |
-| Database | MySQL 8.0 |
+| ORM | Prisma 6 with `@prisma/adapter-libsql` |
+| Database | Turso (SQLite / libSQL) |
 | Validation | Zod 3, React Hook Form 7 |
 | Testing | Vitest 2, Playwright 1, Testing Library 16 |
 | Runtime | Node.js 20+ |
+
+### Mobile (Expo)
+
+| Layer | Technology |
+|---|---|
+| Framework | Expo SDK 54, Expo Router 6 |
+| UI | React Native 0.81, React Native Reanimated |
+| Language | TypeScript 5 |
+| Data Fetching | TanStack Query 5 |
+| Validation | Zod 4, React Hook Form 7 |
 
 ## Project Structure
 
@@ -34,7 +47,7 @@ expense_tracker_new/
 ├── app/                    # Next.js App Router
 │   ├── (auth)/             # Login and registration pages
 │   ├── (dashboard)/        # Protected dashboard pages
-│   └── api/                # API routes (expenses, projects, categories, reports, cron)
+│   └── api/                # API routes (expenses, projects, categories, reports, cron, mobile)
 ├── components/             # React components
 │   ├── auth/               # Login/Register forms
 │   ├── expenses/           # Expense form, list, search UI
@@ -43,16 +56,22 @@ expense_tracker_new/
 │   ├── reports/            # Report views (charts + tables)
 │   └── ui/                 # Generic UI primitives
 ├── lib/                    # Shared utilities
-│   ├── db.ts               # Prisma client singleton
+│   ├── db.ts               # Prisma client (Turso/libSQL adapter)
 │   ├── schemas/            # Zod validation schemas
+│   ├── format-currency.ts  # Currency formatting helpers
+│   ├── mobile-jwt.ts       # JWT helpers for mobile auth
 │   └── utils/              # Helper functions
+├── mobile/                 # Expo / React Native companion app
+│   ├── app/                # Expo Router screens
+│   ├── components/         # Native UI components
+│   └── lib/                # Mobile-specific utilities
 ├── prisma/
-│   ├── schema.prisma       # Database schema
+│   ├── schema.prisma       # Database schema (SQLite / Turso)
 │   ├── seed.ts             # Seeds predefined categories
 │   └── migrations/         # Migration history
 ├── auth.ts                 # Auth.js full config (PrismaAdapter)
 ├── middleware.ts            # Route protection middleware
-├── docker-compose.yml      # Local MySQL container
+├── turso_init.sql          # Turso database initialisation SQL
 ├── vercel.json             # Vercel Cron configuration
 └── .env.local.example      # Environment variable template
 ```
@@ -61,7 +80,7 @@ expense_tracker_new/
 
 - **Node.js** 20+
 - **npm** 9+
-- **Docker** (for local MySQL) — or an [Aiven for MySQL](https://vercel.com/marketplace/aiven) instance
+- **Turso CLI** (optional, for managing a local Turso instance) — or a [Turso](https://turso.tech) cloud database
 
 ## Environment Variables
 
@@ -73,11 +92,13 @@ cp .env.local.example .env.local
 
 ```env
 # ─── Database ──────────────────────────────────────────────────────────────────
-# Option A: Local Docker — matches docker-compose.yml (run `docker compose up -d` first)
-DATABASE_URL="mysql://expense_user:expense_pass@localhost:3306/expense_tracker"
+# Option A: Local SQLite file (no Turso account needed for local dev)
+DATABASE_URL="file:./dev.db"
 
-# Option B: Aiven MySQL (Vercel Marketplace → Storage → Aiven for MySQL → Connection)
-# DATABASE_URL="mysql://user:password@host:port/dbname?ssl-mode=REQUIRED"
+# Option B: Turso cloud database
+# DATABASE_URL="libsql://your-db-name.turso.io"
+# TURSO_DATABASE_URL="libsql://your-db-name.turso.io"
+# TURSO_AUTH_TOKEN="your-turso-auth-token"
 
 # ─── Auth.js ───────────────────────────────────────────────────────────────────
 # Generate with: openssl rand -base64 32
@@ -91,18 +112,20 @@ CRON_SECRET="your-cron-secret-here"
 
 ## Getting Started
 
-### 1. Clone the repository
+### Web App
+
+#### 1. Clone the repository
 
 ```bash
 git clone <repo-url>
 cd expense_tracker_new
 ```
 
-### 2. Set up environment variables
+#### 2. Set up environment variables
 
 ```bash
 cp .env.local.example .env.local
-# Edit .env.local and fill in AUTH_SECRET and CRON_SECRET
+# Edit .env.local — fill in AUTH_SECRET and CRON_SECRET at minimum
 ```
 
 Generate the required secrets:
@@ -112,31 +135,27 @@ openssl rand -base64 32   # → paste as AUTH_SECRET
 openssl rand -hex 32      # → paste as CRON_SECRET
 ```
 
-### 3. Start the MySQL database
-
-```bash
-docker compose up -d
-```
-
-### 4. Install dependencies
+#### 3. Install dependencies
 
 ```bash
 npm install
 ```
 
-### 5. Run database migrations
+#### 4. Run database migrations
 
 ```bash
 npx prisma migrate dev
 ```
 
-### 6. Seed predefined categories
+This creates a local `dev.db` SQLite file when `DATABASE_URL="file:./dev.db"`.
+
+#### 5. Seed predefined categories
 
 ```bash
 npx prisma db seed
 ```
 
-### 7. Start the development server
+#### 6. Start the development server
 
 ```bash
 npm run dev
@@ -144,7 +163,21 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser. Register a new account to get started.
 
+---
+
+### Mobile App
+
+```bash
+cd mobile
+npm install
+npm start       # opens Expo dev tools — press i for iOS, a for Android
+```
+
+> The mobile app communicates with the Next.js API. Set the API base URL in the mobile app's environment config to point to your local or deployed web server.
+
 ## Available Scripts
+
+### Web (`expense_tracker_new/`)
 
 | Command | Description |
 |---|---|
@@ -152,33 +185,43 @@ Open [http://localhost:3000](http://localhost:3000) in your browser. Register a 
 | `npm run build` | Build for production |
 | `npm start` | Start production server |
 | `npm run lint` | Run ESLint |
-| `npm test` | Run unit/integration tests (Vitest) |
 | `npx playwright test` | Run end-to-end tests |
 | `npx prisma migrate dev` | Create and apply a new migration |
 | `npx prisma migrate deploy` | Apply pending migrations (production) |
 | `npx prisma db seed` | Seed predefined categories |
 | `npx prisma studio` | Open Prisma Studio (database GUI) |
 
-## Deployment (Vercel + Aiven MySQL)
+### Mobile (`mobile/`)
 
-1. **Provision the database** — In your Vercel project, go to Storage → Marketplace → Aiven for MySQL and create an instance. Copy the connection string.
+| Command | Description |
+| --- | --- |
+| `npm start` | Start Expo dev server |
+| `npm run ios` | Start on iOS simulator |
+| `npm run android` | Start on Android emulator |
+| `npm run web` | Start in browser |
+
+## Deployment (Vercel + Turso)
+
+1. **Provision a Turso database** — Create a database via the [Turso dashboard](https://turso.tech) or the Vercel Marketplace integration. Copy the database URL and auth token.
 
 2. **Set environment variables** in the Vercel dashboard:
-   - `DATABASE_URL` — Aiven connection string (include `?ssl-mode=REQUIRED`)
+   - `DATABASE_URL` — your Turso database URL (`libsql://...`)
+   - `TURSO_DATABASE_URL` — same Turso URL
+   - `TURSO_AUTH_TOKEN` — Turso auth token
    - `AUTH_SECRET` — `openssl rand -base64 32`
    - `AUTH_URL` — your production URL (e.g., `https://your-app.vercel.app`)
    - `CRON_SECRET` — `openssl rand -hex 32`
 
-3. **Run migrations** against the production database:
+3. **Run migrations** against the Turso database:
    ```bash
-   DATABASE_URL="<aiven-connection-string>" npx prisma migrate deploy
+   TURSO_DATABASE_URL="libsql://..." TURSO_AUTH_TOKEN="..." npx prisma migrate deploy
    ```
 
 4. **Seed predefined categories**:
    ```bash
-   DATABASE_URL="<aiven-connection-string>" npx prisma db seed
+   TURSO_DATABASE_URL="libsql://..." TURSO_AUTH_TOKEN="..." npx prisma db seed
    ```
 
-5. **Deploy** — push to your connected Git branch. Vercel will build and deploy automatically.
+5. **Deploy** — push to your connected Git branch. Vercel builds and deploys automatically.
 
 > **Cron Job**: `vercel.json` configures `/api/cron/recurring-expenses` to run daily at 2 AM UTC, which auto-generates instances of recurring expenses. The `CRON_SECRET` env var secures this endpoint.
