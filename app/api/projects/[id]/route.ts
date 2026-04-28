@@ -25,7 +25,14 @@ export async function DELETE(_request: Request, { params }: Params) {
   if (!project) return NextResponse.json({ error: "Not found" }, { status: 404 });
   if (project.userId !== session.user.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  // Cascade handled by Prisma schema (onDelete: Cascade on expenses + categories)
-  await db.project.delete({ where: { id } });
+  try {
+    await db.$transaction([
+      db.expense.deleteMany({ where: { projectId: id } }),
+      db.category.deleteMany({ where: { projectId: id } }),
+      db.project.delete({ where: { id } }),
+    ]);
+  } catch {
+    return NextResponse.json({ error: "Failed to delete project. Please try again." }, { status: 500 });
+  }
   return NextResponse.json({ deleted: true });
 }
