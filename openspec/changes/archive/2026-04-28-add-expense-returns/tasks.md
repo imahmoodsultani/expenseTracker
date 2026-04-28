@@ -15,7 +15,7 @@
 
 ## 4. Verification
 
-- [ ] 4.1 Manually test: add a negative-amount expense and confirm it saves, shows the Return badge, and the amount is red
-- [ ] 4.2 Manually test: confirm zero amount is rejected with the validation error
-- [ ] 4.3 Manually test: open a report that includes a return expense and confirm the category total is correctly reduced
-- [ ] 4.4 Manually test: download a CSV from a report and confirm the negative amount appears correctly in the file
+- [x] 4.1 Manually test: add a negative-amount expense and confirm it saves, shows the Return badge, and the amount is red
+- [x] 4.2 Manually test: confirm zero amount is rejected with the validation error
+- [x] 4.3 Manually test: open a report that includes a return expense and confirm the category total is correctly reduced
+- [x] 4.4 Manually test: download a CSV from a report and confirm the negative amount appears correctly in the file
