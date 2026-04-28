@@ -117,7 +117,11 @@ export default function ExpenseForm({ projectId, expense, onSuccess, onCancel }:
               errors.amount ? "border-red-500" : "border-gray-300"
             }`}
           />
-          {errors.amount && <p className="mt-1 text-xs text-red-600">{errors.amount.message}</p>}
+          {errors.amount ? (
+            <p className="mt-1 text-xs text-red-600">{errors.amount.message}</p>
+          ) : (
+            <p className="mt-1 text-xs text-gray-400">Enter a negative amount to record a return or refund</p>
+          )}
         </div>
 
         <div>

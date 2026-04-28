@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import RecurringBadge from "./RecurringBadge";
+import ReturnBadge from "./ReturnBadge";
 import { formatCurrency } from "@/lib/format-currency";
 
 type RecurrenceFrequency = "WEEKLY" | "MONTHLY" | "YEARLY";
@@ -53,6 +54,7 @@ export default function ExpenseList({ expenses, onEdit, onDelete }: ExpenseListP
               {expense.isRecurring && expense.recurrenceFrequency && (
                 <RecurringBadge frequency={expense.recurrenceFrequency} />
               )}
+              {Number(expense.amount) < 0 && <ReturnBadge />}
             </div>
             <div className="mt-0.5 flex items-center gap-2 text-xs text-gray-500">
               <span>{expense.date.slice(0, 10)}</span>
@@ -62,7 +64,7 @@ export default function ExpenseList({ expenses, onEdit, onDelete }: ExpenseListP
           </div>
 
           <div className="flex items-center justify-between gap-3 sm:contents">
-            <span className="shrink-0 text-sm font-semibold text-gray-900">
+            <span className={`shrink-0 text-sm font-semibold ${Number(expense.amount) < 0 ? "text-red-600" : "text-gray-900"}`}>
               {formatCurrency(expense.amount)}
             </span>
 

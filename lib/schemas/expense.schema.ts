@@ -8,8 +8,8 @@ export const expenseBaseSchema = z.object({
     .min(1, "Amount is required")
     .refine((val) => {
       const num = parseFloat(val);
-      return !isNaN(num) && num > 0;
-    }, "Amount must be a positive number"),
+      return !isNaN(num) && num !== 0;
+    }, "Amount cannot be zero"),
   date: z.string().min(1, "Date is required").regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format"),
   categoryId: z.string().min(1, "Category is required"),
   description: z.string().trim().optional(),
