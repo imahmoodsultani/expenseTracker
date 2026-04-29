@@ -13,14 +13,18 @@ export async function GET(request: Request, { params }: Params) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { id: projectId } = await params;
+  const { id: rawId } = await params;
+  const projectId = parseInt(rawId, 10);
+  if (isNaN(projectId)) return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+
   const project = await db.project.findUnique({ where: { id: projectId } });
   if (!project) return NextResponse.json({ error: "Not found" }, { status: 404 });
   if (project.userId !== session.user.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { searchParams } = new URL(request.url);
   const search = searchParams.get("search") ?? undefined;
-  const category = searchParams.get("category") ?? undefined;
+  const categoryRaw = searchParams.get("category");
+  const categoryId = categoryRaw ? parseInt(categoryRaw, 10) : undefined;
   const startDate = searchParams.get("startDate") ?? undefined;
   const endDate = searchParams.get("endDate") ?? undefined;
 
@@ -34,7 +38,7 @@ export async function GET(request: Request, { params }: Params) {
           { description: { contains: search } },
         ],
       }),
-      ...(category && { categoryId: category }),
+      ...(categoryId && { categoryId }),
       ...(startDate || endDate
         ? {
             date: {
@@ -55,7 +59,10 @@ export async function POST(request: Request, { params }: Params) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { id: projectId } = await params;
+  const { id: rawId } = await params;
+  const projectId = parseInt(rawId, 10);
+  if (isNaN(projectId)) return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+
   const project = await db.project.findUnique({ where: { id: projectId } });
   if (!project) return NextResponse.json({ error: "Not found" }, { status: 404 });
   if (project.userId !== session.user.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -66,7 +73,8 @@ export async function POST(request: Request, { params }: Params) {
     return NextResponse.json({ errors: parsed.error.flatten().fieldErrors }, { status: 422 });
   }
 
-  const { title, amount, date, categoryId, description, isRecurring, recurrenceFrequency } = parsed.data;
+  const { title, amount, date, categoryId: categoryIdStr, description, isRecurring, recurrenceFrequency } = parsed.data;
+  const categoryId = parseInt(categoryIdStr, 10);
 
   // Validate category is accessible within this project
   const category = await db.category.findUnique({ where: { id: categoryId } });

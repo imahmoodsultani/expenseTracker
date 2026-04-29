@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import SignOutButton from "@/components/auth/SignOutButton";
 import NavLink from "@/components/ui/NavLink";
 import MobileNav from "@/components/ui/MobileNav";
+import ProfileAvatarMenu from "@/components/ui/ProfileAvatarMenu";
 
 export default async function DashboardLayout({
   children,
@@ -28,8 +29,10 @@ export default async function DashboardLayout({
           </nav>
           <div className="flex items-center gap-2 md:gap-3">
             <span className="hidden items-center gap-2 md:flex md:gap-3">
-              <NavLink href="/profile">Profile</NavLink>
-              <span className="text-sm text-gray-500">{session.user.email}</span>
+              <ProfileAvatarMenu
+                name={session.user.name ?? null}
+                email={session.user.email ?? null}
+              />
               <SignOutButton />
             </span>
             <MobileNav />

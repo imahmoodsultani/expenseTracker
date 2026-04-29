@@ -7,8 +7,8 @@ const createSchema = z.object({
   title: z.string().min(1),
   amount: z.number().positive(),
   date: z.string(),
-  categoryId: z.string(),
-  projectId: z.string().optional(),
+  categoryId: z.coerce.number().int().positive(),
+  projectId: z.coerce.number().int().positive().optional(),
   description: z.string().optional(),
 });
 
@@ -17,7 +17,8 @@ export async function GET(req: Request) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { searchParams } = new URL(req.url);
-  const projectId = searchParams.get("projectId");
+  const projectIdRaw = searchParams.get("projectId");
+  const projectId = projectIdRaw ? parseInt(projectIdRaw, 10) : undefined;
   const limit = parseInt(searchParams.get("limit") ?? "50");
 
   const expenses = await db.expense.findMany({

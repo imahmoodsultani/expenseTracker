@@ -10,7 +10,7 @@ datasource db {
 // ─── Models ───────────────────────────────────────────────────────────────────
 
 model User {
-  id            String     @id @default(cuid())
+  id            Int        @id @default(autoincrement())
   email         String     @unique
   password      String
   name          String?
@@ -30,7 +30,7 @@ model User {
 
 model Account {
   id                String  @id @default(cuid())
-  userId            String
+  userId            Int
   type              String
   provider          String
   providerAccountId String
@@ -50,7 +50,7 @@ model Account {
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
-  userId       String
+  userId       Int
   expires      DateTime
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -65,9 +65,9 @@ model VerificationToken {
 }
 
 model Project {
-  id        String   @id @default(cuid())
+  id        Int      @id @default(autoincrement())
   name      String
-  userId    String
+  userId    Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -77,14 +77,14 @@ model Project {
 }
 
 model Expense {
-  id          String   @id @default(cuid())
+  id          Int      @id @default(autoincrement())
   title       String
   amount      Decimal
   date        DateTime
   description String?
-  categoryId  String
-  userId      String
-  projectId   String?
+  categoryId  Int
+  userId      Int
+  projectId   Int?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -93,7 +93,7 @@ model Expense {
   recurrenceFrequency         String?  // WEEKLY | MONTHLY | YEARLY
   nextDueDate                 DateTime?
   recurrenceLastGeneratedDate DateTime?
-  recurrenceParentId          String?
+  recurrenceParentId          Int?
 
   // Relations
   category           Category  @relation(fields: [categoryId], references: [id])
@@ -104,13 +104,13 @@ model Expense {
 }
 
 model Category {
-  id        String   @id @default(cuid())
+  id        Int      @id @default(autoincrement())
   name      String
   type      String   // PREDEFINED | CUSTOM
   scope     String   // GLOBAL | PROJECT
   isDeleted Boolean  @default(false)
-  userId    String?
-  projectId String?
+  userId    Int?
+  projectId Int?
   createdAt DateTime @default(now())
 
   user     User?     @relation(fields: [userId], references: [id], onDelete: Cascade)

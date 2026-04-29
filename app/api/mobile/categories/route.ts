@@ -7,7 +7,8 @@ export async function GET(req: Request) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { searchParams } = new URL(req.url);
-  const projectId = searchParams.get("projectId");
+  const projectIdRaw = searchParams.get("projectId");
+  const projectId = projectIdRaw ? parseInt(projectIdRaw, 10) : undefined;
 
   const categories = await db.category.findMany({
     where: {

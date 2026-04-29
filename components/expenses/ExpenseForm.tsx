@@ -7,16 +7,16 @@ import CategoryDropdown from "@/components/categories/CategoryDropdown";
 import { useEffect } from "react";
 
 interface Expense {
-  id: string;
+  id: number;
   title: string;
   amount: string | number;
   date: string;
-  categoryId: string;
-  category: { id: string; name: string };
+  categoryId: number;
+  category: { id: number; name: string };
   description?: string | null;
   isRecurring: boolean;
   recurrenceFrequency?: "WEEKLY" | "MONTHLY" | "YEARLY" | null;
-  projectId?: string | null;
+  projectId?: number | null;
 }
 
 interface ExpenseFormProps {
@@ -42,7 +42,7 @@ export default function ExpenseForm({ projectId, expense, onSuccess, onCancel }:
       title: expense?.title ?? "",
       amount: expense ? String(expense.amount) : "",
       date: expense?.date ? expense.date.slice(0, 10) : new Date().toISOString().slice(0, 10),
-      categoryId: expense?.categoryId ?? "",
+      categoryId: expense?.categoryId != null ? String(expense.categoryId) : "",
       description: expense?.description ?? "",
       isRecurring: expense?.isRecurring ?? false,
       recurrenceFrequency: expense?.recurrenceFrequency ?? null,

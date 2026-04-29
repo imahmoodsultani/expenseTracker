@@ -5,7 +5,7 @@ import ProjectList from "@/components/projects/ProjectList";
 import ProjectForm from "@/components/projects/ProjectForm";
 
 interface Project {
-  id: string;
+  id: number;
   name: string;
   expenseCount: number;
   totalAmount: string;
@@ -29,12 +29,12 @@ export default function ProjectsPage() {
     load();
   }, []);
 
-  function handleCreated(project: { id: string; name: string }) {
+  function handleCreated(project: { id: number; name: string }) {
     setProjects((prev) => [{ ...project, expenseCount: 0, totalAmount: "0.00" }, ...prev]);
     setShowForm(false);
   }
 
-  function handleDelete(id: string) {
+  function handleDelete(id: number) {
     setProjects((prev) => prev.filter((p) => p.id !== id));
   }
 

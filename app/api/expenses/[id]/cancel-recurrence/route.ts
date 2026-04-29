@@ -8,7 +8,10 @@ export async function PATCH(_request: Request, { params }: Params) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { id } = await params;
+  const { id: rawId } = await params;
+  const id = parseInt(rawId, 10);
+  if (isNaN(id)) return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+
   const existing = await db.expense.findUnique({ where: { id } });
   if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
   if (existing.userId !== session.user.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 });

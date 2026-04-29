@@ -10,7 +10,8 @@ export async function GET(request: Request) {
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { searchParams } = new URL(request.url);
-  const projectId = searchParams.get("projectId");
+  const projectIdRaw = searchParams.get("projectId");
+  const projectId = projectIdRaw ? parseInt(projectIdRaw, 10) : null;
 
   const categories = await db.category.findMany({
     where: {
@@ -42,7 +43,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ errors: parsed.error.flatten().fieldErrors }, { status: 422 });
   }
 
-  const { name, projectId } = parsed.data;
+  const { name, projectId: projectIdStr } = parsed.data;
+  const projectId = projectIdStr ? parseInt(projectIdStr, 10) : null;
   const scope = projectId ? CategoryScope.PROJECT : CategoryScope.GLOBAL;
 
   // Enforce name uniqueness within scope per user

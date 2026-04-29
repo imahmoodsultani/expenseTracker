@@ -8,28 +8,28 @@ import { formatCurrency } from "@/lib/format-currency";
 type RecurrenceFrequency = "WEEKLY" | "MONTHLY" | "YEARLY";
 
 interface Expense {
-  id: string;
+  id: number;
   title: string;
   amount: string | number;
   date: string;
-  categoryId: string;
-  category: { id: string; name: string };
+  categoryId: number;
+  category: { id: number; name: string };
   description?: string | null;
   isRecurring: boolean;
   recurrenceFrequency?: RecurrenceFrequency | null;
-  projectId?: string | null;
+  projectId?: number | null;
 }
 
 interface ExpenseListProps {
   expenses: Expense[];
   onEdit: (expense: Expense) => void;
-  onDelete: (id: string) => void;
+  onDelete: (id: number) => void;
 }
 
 export default function ExpenseList({ expenses, onEdit, onDelete }: ExpenseListProps) {
-  const [confirmId, setConfirmId] = useState<string | null>(null);
+  const [confirmId, setConfirmId] = useState<number | null>(null);
 
-  async function handleDelete(id: string, projectId?: string | null) {
+  async function handleDelete(id: number, projectId?: number | null) {
     const url = projectId ? `/api/projects/${projectId}/expenses/${id}` : `/api/expenses/${id}`;
     const res = await fetch(url, { method: "DELETE" });
     if (res.ok) onDelete(id);

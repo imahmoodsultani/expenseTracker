@@ -11,7 +11,8 @@ export async function GET(request: Request) {
 
   const { searchParams } = new URL(request.url);
   const search = searchParams.get("search") ?? undefined;
-  const category = searchParams.get("category") ?? undefined;
+  const categoryRaw = searchParams.get("category");
+  const categoryId = categoryRaw ? parseInt(categoryRaw, 10) : undefined;
   const startDate = searchParams.get("startDate") ?? undefined;
   const endDate = searchParams.get("endDate") ?? undefined;
 
@@ -25,7 +26,7 @@ export async function GET(request: Request) {
           { description: { contains: search } },
         ],
       }),
-      ...(category && { categoryId: category }),
+      ...(categoryId && { categoryId }),
       ...(startDate || endDate
         ? {
             date: {
@@ -52,7 +53,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ errors: parsed.error.flatten().fieldErrors }, { status: 422 });
   }
 
-  const { title, amount, date, categoryId, description, isRecurring, recurrenceFrequency } = parsed.data;
+  const { title, amount, date, categoryId: categoryIdStr, description, isRecurring, recurrenceFrequency } = parsed.data;
+  const categoryId = parseInt(categoryIdStr, 10);
 
   const expenseDate = new Date(date);
   const nextDueDate =

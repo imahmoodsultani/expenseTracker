@@ -14,21 +14,24 @@ type ExpenseWithCategory = {
 };
 
 type GroupedRow = {
-  categoryId: string;
+  categoryId: number;
   _sum: { amount: unknown };
   _count: { id: number };
 };
 
-type CategoryRow = { id: string; name: string };
+type CategoryRow = { id: number; name: string };
 
 export async function GET(request: Request, { params }: Params) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { id: projectId } = await params;
+  const { id: rawId } = await params;
+  const projectId = parseInt(rawId, 10);
+  if (isNaN(projectId)) return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+
   const project = await db.project.findUnique({ where: { id: projectId } });
   if (!project) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  if ((project as { userId: string }).userId !== session.user.id)
+  if (project.userId !== session.user.id)
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { searchParams } = new URL(request.url);
@@ -62,8 +65,7 @@ export async function GET(request: Request, { params }: Params) {
       Category: e.category.name,
       Description: e.description ?? "",
     }));
-    const projectRecord = project as { name: string };
-    return buildCsvResponse(rows, `project-${projectRecord.name.replace(/\s+/g, "-").toLowerCase()}-report.csv`);
+    return buildCsvResponse(rows, `project-${project.name.replace(/\s+/g, "-").toLowerCase()}-report.csv`);
   }
 
   const grouped = await db.expense.groupBy({
@@ -89,12 +91,11 @@ export async function GET(request: Request, { params }: Params) {
   }));
 
   const grandTotal = totals.reduce((sum: number, t) => sum + Number(t.total), 0).toFixed(2);
-  const projectRecord = project as { name: string };
 
   return NextResponse.json({
     totals,
     grandTotal,
-    projectName: projectRecord.name,
+    projectName: project.name,
     dateRange: { start: startDate ?? null, end: endDate ?? null },
   });
 }

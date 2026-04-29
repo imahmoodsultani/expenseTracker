@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 interface Category {
-  id: string;
+  id: number;
   name: string;
 }
 
@@ -54,7 +54,7 @@ export default function CategoryDropdown({ value, onChange, projectId, error, di
       return;
     }
     await fetchCategories();
-    onChange(data.id);
+    onChange(String(data.id));
     setNewName("");
     setAdding(false);
   }

@@ -8,7 +8,7 @@ import type { z } from "zod";
 type ProjectFormValues = z.infer<typeof projectSchema>;
 
 interface ProjectFormProps {
-  onSuccess: (project: { id: string; name: string }) => void;
+  onSuccess: (project: { id: number; name: string }) => void;
   onCancel: () => void;
 }
 

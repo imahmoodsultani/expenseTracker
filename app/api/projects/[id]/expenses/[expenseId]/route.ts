@@ -9,7 +9,11 @@ export async function PUT(request: Request, { params }: Params) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { id: projectId, expenseId } = await params;
+  const { id: rawId, expenseId: rawExpenseId } = await params;
+  const projectId = parseInt(rawId, 10);
+  const expenseId = parseInt(rawExpenseId, 10);
+  if (isNaN(projectId) || isNaN(expenseId)) return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+
   const expense = await db.expense.findUnique({ where: { id: expenseId } });
   if (!expense || expense.projectId !== projectId) return NextResponse.json({ error: "Not found" }, { status: 404 });
   if (expense.userId !== session.user.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -20,7 +24,8 @@ export async function PUT(request: Request, { params }: Params) {
     return NextResponse.json({ errors: parsed.error.flatten().fieldErrors }, { status: 422 });
   }
 
-  const { title, amount, date, categoryId, description } = parsed.data;
+  const { title, amount, date, categoryId: categoryIdStr, description } = parsed.data;
+  const categoryId = categoryIdStr ? parseInt(categoryIdStr, 10) : undefined;
 
   const updated = await db.expense.update({
     where: { id: expenseId },
@@ -41,7 +46,11 @@ export async function DELETE(_request: Request, { params }: Params) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { id: projectId, expenseId } = await params;
+  const { id: rawId, expenseId: rawExpenseId } = await params;
+  const projectId = parseInt(rawId, 10);
+  const expenseId = parseInt(rawExpenseId, 10);
+  if (isNaN(projectId) || isNaN(expenseId)) return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+
   const expense = await db.expense.findUnique({ where: { id: expenseId } });
   if (!expense || expense.projectId !== projectId) return NextResponse.json({ error: "Not found" }, { status: 404 });
   if (expense.userId !== session.user.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 });

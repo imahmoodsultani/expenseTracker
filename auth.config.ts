@@ -38,7 +38,8 @@ export const authConfig: NextAuthConfig = {
       return token;
     },
     async session({ session, token }) {
-      if (token.id) session.user.id = token.id as string;
+      // @ts-expect-error Auth.js merges id: string from DefaultUser; we override it to number at runtime
+      if (token.id) session.user.id = Number(token.id);
       return session;
     },
   },

@@ -27,7 +27,7 @@ type InfoValues = z.infer<typeof infoSchema>;
 type PasswordValues = z.infer<typeof passwordSchema>;
 
 interface User {
-  id: string;
+  id: number;
   email: string;
   name: string | null;
   phoneNumber: string | null;

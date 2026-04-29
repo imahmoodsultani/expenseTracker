@@ -9,7 +9,10 @@ export async function DELETE(_request: Request, { params }: Params) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { id } = await params;
+  const { id: rawId } = await params;
+  const id = parseInt(rawId, 10);
+  if (isNaN(id)) return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+
   const category = await db.category.findUnique({ where: { id } });
   if (!category) return NextResponse.json({ error: "Not found" }, { status: 404 });
   if (category.type === CategoryType.PREDEFINED) {

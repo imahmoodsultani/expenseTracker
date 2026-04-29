@@ -6,7 +6,10 @@ import { getMobileUser } from "@/lib/mobile-jwt";
 const updateSchema = z.object({ name: z.string().min(1) });
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+  const { id: rawId } = await params;
+  const id = parseInt(rawId, 10);
+  if (isNaN(id)) return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+
   const user = await getMobileUser(req);
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
@@ -27,7 +30,10 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 }
 
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+  const { id: rawId } = await params;
+  const id = parseInt(rawId, 10);
+  if (isNaN(id)) return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+
   const user = await getMobileUser(req);
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
