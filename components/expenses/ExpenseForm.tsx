@@ -108,19 +108,32 @@ export default function ExpenseForm({ projectId, expense, onSuccess, onCancel }:
           <label className="block text-sm font-medium text-gray-700">
             Amount <span className="text-red-500">*</span>
           </label>
-          <input
-            type="text"
-            inputMode="decimal"
-            placeholder="0.00"
-            {...register("amount")}
-            className={`mt-1 w-full rounded-md border px-3 py-2 text-sm text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.amount ? "border-red-500" : "border-gray-300"
-            }`}
-          />
+          <div className="mt-1 flex gap-2">
+            <button
+              type="button"
+              aria-label="Toggle positive/negative"
+              onClick={() => {
+                const current = watch("amount");
+                setValue("amount", current.startsWith("-") ? current.slice(1) : `-${current}`, { shouldValidate: true });
+              }}
+              className="flex-shrink-0 rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {watch("amount").startsWith("-") ? "−" : "+"}
+            </button>
+            <input
+              type="text"
+              inputMode="decimal"
+              placeholder="0.00"
+              {...register("amount")}
+              className={`w-full rounded-md border px-3 py-2 text-sm text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                errors.amount ? "border-red-500" : "border-gray-300"
+              }`}
+            />
+          </div>
           {errors.amount ? (
             <p className="mt-1 text-xs text-red-600">{errors.amount.message}</p>
           ) : (
-            <p className="mt-1 text-xs text-gray-400">Enter a negative amount to record a return or refund</p>
+            <p className="mt-1 text-xs text-gray-400">Tap +/− to record a return or refund</p>
           )}
         </div>
 

@@ -5,7 +5,7 @@ import { getMobileUser } from "@/lib/mobile-jwt";
 
 const updateSchema = z.object({
   title: z.string().min(1).optional(),
-  amount: z.number().positive().optional(),
+  amount: z.number().refine((v) => v !== 0, { message: "Amount cannot be zero" }).optional(),
   date: z.string().optional(),
   categoryId: z.coerce.number().int().positive().optional(),
   description: z.string().optional(),
