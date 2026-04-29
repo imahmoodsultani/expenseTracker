@@ -12,12 +12,12 @@ type ExpenseWithCategory = {
 };
 
 type GroupedRow = {
-  categoryId: string;
+  categoryId: number;
   _sum: { amount: unknown };
   _count: { id: number };
 };
 
-type CategoryRow = { id: string; name: string };
+type CategoryRow = { id: number; name: string };
 
 export async function GET(request: Request) {
   const session = await auth();

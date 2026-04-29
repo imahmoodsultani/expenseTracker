@@ -8,7 +8,7 @@ import Link from "next/link";
 import { formatCurrency } from "@/lib/format-currency";
 
 interface CategoryTotal {
-  categoryId: string;
+  categoryId: number;
   categoryName: string;
   total: string;
   count: number;

@@ -13,19 +13,19 @@ type ExpenseWithRefs = {
 };
 
 type GroupedRow = {
-  categoryId: string;
-  projectId: string | null;
+  categoryId: number;
+  projectId: number | null;
   _sum: { amount: unknown };
 };
 
 type FlatGroupedRow = {
-  categoryId: string;
+  categoryId: number;
   _sum: { amount: unknown };
   _count: { id: number };
 };
 
-type CategoryRow = { id: string; name: string };
-type ProjectRow = { id: string; name: string };
+type CategoryRow = { id: number; name: string };
+type ProjectRow = { id: number; name: string };
 
 export async function GET(request: Request) {
   const session = await auth();
@@ -79,7 +79,7 @@ export async function GET(request: Request) {
 
     const categoryIds = Array.from(new Set(grouped.map((g) => g.categoryId)));
     const projectIds = Array.from(
-      new Set(grouped.map((g) => g.projectId).filter((id): id is string => id !== null))
+      new Set(grouped.map((g) => g.projectId).filter((id): id is number => id !== null))
     );
 
     const [categories, projects] = await Promise.all([
@@ -91,8 +91,8 @@ export async function GET(request: Request) {
     const projMap = Object.fromEntries(projects.map((p) => [p.id, p.name]));
 
     const categoryMap = new Map<
-      string,
-      { categoryName: string; total: number; sources: { source: string; projectId: string | null; total: string }[] }
+      number,
+      { categoryName: string; total: number; sources: { source: string; projectId: number | null; total: string }[] }
     >();
 
     for (const g of grouped) {

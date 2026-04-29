@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { projectSchema } from "@/lib/schemas/project.schema";
 
 type ProjectWithAggregates = {
-  id: string;
+  id: number;
   name: string;
   createdAt: Date;
   _count: { expenses: number };

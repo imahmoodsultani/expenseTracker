@@ -12,7 +12,10 @@ export async function GET(_request: Request, { params }: Params) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { id } = await params;
+  const { id: rawId } = await params;
+  const id = parseInt(rawId, 10);
+  if (isNaN(id)) return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+
   const expense = await db.expense.findUnique({
     where: { id },
     include: { category: { select: { id: true, name: true } } },
@@ -27,7 +30,10 @@ export async function PUT(request: Request, { params }: Params) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { id } = await params;
+  const { id: rawId } = await params;
+  const id = parseInt(rawId, 10);
+  if (isNaN(id)) return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+
   const existing = await db.expense.findUnique({ where: { id } });
   if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
   if (existing.userId !== session.user.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -38,7 +44,8 @@ export async function PUT(request: Request, { params }: Params) {
     return NextResponse.json({ errors: parsed.error.flatten().fieldErrors }, { status: 422 });
   }
 
-  const { title, amount, date, categoryId, description, isRecurring, recurrenceFrequency } = parsed.data;
+  const { title, amount, date, categoryId: categoryIdStr, description, isRecurring, recurrenceFrequency } = parsed.data;
+  const categoryId = categoryIdStr ? parseInt(categoryIdStr, 10) : undefined;
   const expenseDate = date ? new Date(date) : undefined;
   const newIsRecurring = isRecurring ?? existing.isRecurring;
   const newFrequency = (recurrenceFrequency as RecurrenceFrequency) ?? existing.recurrenceFrequency;
@@ -71,7 +78,10 @@ export async function DELETE(_request: Request, { params }: Params) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { id } = await params;
+  const { id: rawId } = await params;
+  const id = parseInt(rawId, 10);
+  if (isNaN(id)) return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+
   const existing = await db.expense.findUnique({ where: { id } });
   if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
   if (existing.userId !== session.user.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 });

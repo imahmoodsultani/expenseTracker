@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 
 interface Category {
-  id: string;
+  id: number;
   name: string;
   type: "PREDEFINED" | "CUSTOM";
   scope: "GLOBAL" | "PROJECT";
-  projectId: string | null;
+  projectId: number | null;
 }
 
 interface CategoryManagerProps {
@@ -16,7 +16,7 @@ interface CategoryManagerProps {
 
 export default function CategoryManager({ projectId }: CategoryManagerProps) {
   const [categories, setCategories] = useState<Category[]>([]);
-  const [confirmId, setConfirmId] = useState<string | null>(null);
+  const [confirmId, setConfirmId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
   async function load() {
@@ -34,7 +34,7 @@ export default function CategoryManager({ projectId }: CategoryManagerProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId]);
 
-  async function handleDelete(id: string) {
+  async function handleDelete(id: number) {
     const res = await fetch(`/api/categories/${id}`, { method: "DELETE" });
     if (res.ok) {
       setCategories((prev) => prev.filter((c) => c.id !== id));

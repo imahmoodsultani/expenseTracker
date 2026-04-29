@@ -6,8 +6,8 @@ const getSecret = () => {
   return new TextEncoder().encode(secret);
 };
 
-export async function signMobileToken(userId: string, email: string) {
-  return new SignJWT({ sub: userId, email })
+export async function signMobileToken(userId: number, email: string) {
+  return new SignJWT({ sub: String(userId), email })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("30d")
@@ -18,7 +18,7 @@ export async function verifyMobileToken(token: string) {
   try {
     const { payload } = await jwtVerify(token, getSecret());
     if (!payload.sub || typeof payload.email !== "string") return null;
-    return { id: payload.sub, email: payload.email };
+    return { id: Number(payload.sub), email: payload.email };
   } catch {
     return null;
   }

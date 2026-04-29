@@ -6,31 +6,18 @@ const CategoryScope = { GLOBAL: "GLOBAL", PROJECT: "PROJECT" } as const;
 const prisma = new PrismaClient();
 
 async function main() {
-  const predefined = [
-    { name: "Food" },
-    { name: "Vehicle" },
-    { name: "Household" },
-    { name: "Medicines" },
-  ];
+  const predefinedNames = ["Food", "Vehicle", "Household", "Medicines"];
 
-  for (const cat of predefined) {
-    await prisma.category.upsert({
-      where: {
-        // Use a unique combination; since predefined categories have no userId/projectId,
-        // we rely on name + type + scope being unique for seeding purposes.
-        id: `predefined-${cat.name.toLowerCase()}`,
-      },
-      update: {},
-      create: {
-        id: `predefined-${cat.name.toLowerCase()}`,
-        name: cat.name,
-        type: CategoryType.PREDEFINED,
-        scope: CategoryScope.GLOBAL,
-        userId: null,
-        projectId: null,
-      },
-    });
-  }
+  await prisma.category.deleteMany({ where: { type: CategoryType.PREDEFINED } });
+  await prisma.category.createMany({
+    data: predefinedNames.map((name) => ({
+      name,
+      type: CategoryType.PREDEFINED,
+      scope: CategoryScope.GLOBAL,
+      userId: null,
+      projectId: null,
+    })),
+  });
 
   console.log("Seeded predefined categories: Food, Vehicle, Household, Medicines");
 }

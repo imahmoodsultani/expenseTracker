@@ -5,12 +5,12 @@ import { useParams, useRouter } from "next/navigation";
 import ExpenseForm from "@/components/expenses/ExpenseForm";
 
 interface Expense {
-  id: string;
+  id: number;
   title: string;
   amount: string | number;
   date: string;
-  categoryId: string;
-  category: { id: string; name: string };
+  categoryId: number;
+  category: { id: number; name: string };
   description?: string | null;
   isRecurring: boolean;
   recurrenceFrequency?: "WEEKLY" | "MONTHLY" | "YEARLY" | null;

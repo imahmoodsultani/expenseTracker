@@ -5,7 +5,7 @@ import { useState } from "react";
 import { formatCurrency } from "@/lib/format-currency";
 
 interface Project {
-  id: string;
+  id: number;
   name: string;
   expenseCount: number;
   totalAmount: string;
@@ -13,7 +13,7 @@ interface Project {
 
 interface ProjectListProps {
   projects: Project[];
-  onDelete: (id: string) => void;
+  onDelete: (id: number) => void;
 }
 
 type DialogState =
@@ -108,7 +108,6 @@ export default function ProjectList({ projects, onDelete }: ProjectListProps) {
         ))}
       </div>
 
-      {/* Warning dialog — shown when project has expenses */}
       {dialog.step === "warning" && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
@@ -141,7 +140,6 @@ export default function ProjectList({ projects, onDelete }: ProjectListProps) {
         </div>
       )}
 
-      {/* Name verification dialog */}
       {dialog.step === "verifying" && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
